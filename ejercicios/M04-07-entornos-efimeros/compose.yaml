@@ -1,0 +1,43 @@
+# Lab M04-07: un entorno completo (base de datos con semilla + API) que se crea y se destruye en cada ejecución.
+name: m04-07
+
+services:
+  # Base de datos: PostgreSQL 17 con los datos de semilla
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: libros
+      POSTGRES_PASSWORD: libros
+      POSTGRES_DB: libros
+    volumes:
+      - datos:/var/lib/postgresql/data # los datos viven en un volumen con nombre
+      - ./db/semilla.sql:/docker-entrypoint-initdb.d/semilla.sql:ro # se ejecuta solo si el volumen está vacío
+    healthcheck:
+      test: ['CMD', 'pg_isready', '-U', 'libros', '-d', 'libros']
+      interval: 2s
+      timeout: 2s
+      retries: 15
+
+  # La API de libros, construida desde app/Dockerfile
+  api:
+    build: ./app
+    init: true
+    environment:
+      PORT: 3407
+      PGHOST: db # el nombre del servicio de la base de datos
+      PGUSER: libros
+      PGPASSWORD: libros
+      PGDATABASE: libros
+    ports:
+      - '3407:3407'
+    healthcheck: # sana cuando /salud responde, es decir, cuando ya habla con la base de datos
+      test: ['CMD', 'wget', '-qO-', 'http://localhost:3407/salud']
+      interval: 2s
+      timeout: 2s
+      retries: 15
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  datos:

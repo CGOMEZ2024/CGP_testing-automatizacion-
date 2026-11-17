@@ -1,0 +1,173 @@
+{
+  "info": {
+    "name": "M03-04 API de contactos",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Crear contacto",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// El estado esperado llega de la fila del CSV (o de la variable de colección si no hay CSV)",
+              "const esperado = Number(pm.variables.get('estadoEsperado'));",
+              "pm.test(`el estado es ${esperado}`, () => {",
+              "  pm.response.to.have.status(esperado);",
+              "});",
+              "pm.test('responde el entorno elegido', () => {",
+              "  pm.response.to.have.header('X-Entorno', pm.environment.get('nombreEntorno'));",
+              "});",
+              "if (pm.response.code !== 201) {",
+              "  // Sin contacto creado no hay nada que leer ni borrar: termina esta iteración",
+              "  pm.execution.setNextRequest(null);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/contactos",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "contactos"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"nombre\": \"{{nombre}}\", \"email\": \"{{email}}\"}"
+        }
+      }
+    },
+    {
+      "name": "Leer el contacto creado",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('el estado es 200', () => {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "pm.test('es el contacto creado', () => {",
+              "  pm.expect(pm.response.json()).to.include({",
+              "    nombre: pm.variables.get('nombre'),",
+              "    email: pm.variables.get('email')",
+              "  });",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/contactos/{{contactoId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "contactos",
+            "{{contactoId}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Borrar el contacto",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('el estado es 204', () => {",
+              "  pm.response.to.have.status(204);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/contactos/{{contactoId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "contactos",
+            "{{contactoId}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Leer el contacto borrado",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('ya no existe: 404', () => {",
+              "  pm.response.to.have.status(404);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/contactos/{{contactoId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "contactos",
+            "{{contactoId}}"
+          ]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "nombre",
+      "value": "Ana"
+    },
+    {
+      "key": "email",
+      "value": "ana@example.com"
+    },
+    {
+      "key": "estadoEsperado",
+      "value": "201"
+    },
+    {
+      "key": "contactoId",
+      "value": ""
+    }
+  ]
+}

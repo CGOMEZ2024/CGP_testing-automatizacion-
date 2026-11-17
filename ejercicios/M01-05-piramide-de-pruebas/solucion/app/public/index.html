@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Calculadora de envío</title>
+</head>
+<body>
+  <h1>Calculadora de envío</h1>
+  <form id="envio">
+    <label for="importe">Importe del pedido</label>
+    <input id="importe" type="number" step="0.01" value="30">
+    <label for="zona">Zona</label>
+    <select id="zona">
+      <option value="peninsula">Península</option>
+      <option value="baleares">Baleares</option>
+      <option value="canarias">Canarias</option>
+    </select>
+    <button type="submit">Calcular envío</button>
+  </form>
+  <p>Envío: <output id="coste" aria-label="Envío">—</output></p>
+  <script>
+    // La página no calcula: pide el coste a la API y lo muestra.
+    document.getElementById('envio').addEventListener('submit', async (evento) => {
+      evento.preventDefault();
+      const importe = document.getElementById('importe').value;
+      const zona = document.getElementById('zona').value;
+      const respuesta = await fetch(`/api/envio?importe=${importe}&zona=${zona}`);
+      const datos = await respuesta.json();
+      const salida = document.getElementById('coste');
+      if (!respuesta.ok) salida.textContent = datos.error;
+      else salida.textContent = datos.coste === 0 ? 'Gratis' : `${datos.coste.toFixed(2)} €`;
+    });
+  </script>
+</body>
+</html>

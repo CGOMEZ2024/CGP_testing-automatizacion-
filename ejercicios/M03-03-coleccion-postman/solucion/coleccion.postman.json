@@ -1,0 +1,228 @@
+{
+  "info": {
+    "name": "M03-03 API de libros",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Listar libros",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('el estado es 200', () => {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "pm.test('responde JSON', () => {",
+              "  pm.response.to.be.json;",
+              "});",
+              "pm.test('devuelve una lista con libros', () => {",
+              "  const libros = pm.response.json();",
+              "  pm.expect(libros).to.be.an('array').that.is.not.empty;",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/libros",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "libros"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Leer el libro 1",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('el estado es 200', () => {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "pm.test('es el libro 1', () => {",
+              "  const libro = pm.response.json();",
+              "  pm.expect(libro.id).to.eql(1);",
+              "  pm.expect(libro.titulo).to.eql('Clean Code');",
+              "  pm.expect(libro.disponible).to.be.a('boolean');",
+              "});",
+              "pm.test('cumple el esquema del libro', () => {",
+              "  pm.response.to.have.jsonSchema({",
+              "    type: 'object',",
+              "    required: ['id', 'titulo', 'autor', 'anio', 'disponible'],",
+              "    properties: {",
+              "      id: { type: 'integer' },",
+              "      titulo: { type: 'string' },",
+              "      autor: { type: 'string' },",
+              "      anio: { type: ['integer', 'null'] },",
+              "      disponible: { type: 'boolean' }",
+              "    }",
+              "  });",
+              "});",
+              "pm.test('responde en menos de 500 ms', () => {",
+              "  pm.expect(pm.response.responseTime).to.be.below(500);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/libros/1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "libros",
+            "1"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Leer un libro que no existe",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('el estado es 404', () => {",
+              "  pm.response.to.have.status(404);",
+              "});",
+              "pm.test('explica el error', () => {",
+              "  pm.expect(pm.response.json()).to.eql({ error: 'Libro no encontrado' });",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/libros/99",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "libros",
+            "99"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Crear un libro",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('el estado es 201', () => {",
+              "  pm.response.to.have.status(201);",
+              "});",
+              "pm.test('devuelve el libro creado', () => {",
+              "  const libro = pm.response.json();",
+              "  pm.expect(libro).to.include({ titulo: 'Accelerate', autor: 'Nicole Forsgren', disponible: true });",
+              "  pm.expect(libro.id).to.be.a('number');",
+              "});",
+              "pm.test('la cabecera Location apunta al libro', () => {",
+              "  const libro = pm.response.json();",
+              "  pm.response.to.have.header('Location', '/api/libros/' + libro.id);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/libros",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "libros"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"titulo\": \"Accelerate\", \"autor\": \"Nicole Forsgren\", \"anio\": 2018}"
+        }
+      }
+    },
+    {
+      "name": "Crear un libro sin autor",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('el estado es 400', () => {",
+              "  pm.response.to.have.status(400);",
+              "});",
+              "pm.test('explica qué falta', () => {",
+              "  pm.expect(pm.response.json().error).to.eql('titulo y autor son obligatorios');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"titulo\": \"Sin autor\"}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/libros",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "libros"
+          ]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3303"
+    }
+  ]
+}

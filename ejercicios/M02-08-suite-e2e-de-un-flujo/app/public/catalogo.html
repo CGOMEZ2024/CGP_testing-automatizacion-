@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="es">
+<head><meta charset="utf-8"><title>Catálogo · Tienda</title><link rel="stylesheet" href="/estilos.css"></head>
+<body>
+  <header>
+    <span id="usuario"></span> ·
+    <a href="/catalogo.html">Catálogo</a> ·
+    <a id="enlace-carrito" href="/carrito.html">Carrito (0)</a>
+  </header>
+  <h1>Catálogo</h1>
+  <div id="productos"></div>
+  <script type="module">
+    import { carrito, euros, exigirSesion, pintarContador } from '/tienda.js';
+    await exigirSesion();
+    const productos = await (await fetch('/api/productos')).json();
+    for (const p of productos) {
+      const ficha = document.createElement('article');
+      ficha.innerHTML = `<h2></h2><p>${euros(p.precio)}</p><button>Añadir al carrito</button>`;
+      ficha.querySelector('h2').textContent = p.nombre;
+      ficha.setAttribute('aria-label', p.nombre);
+      ficha.querySelector('button').addEventListener('click', () => {
+        const lineas = carrito.leer();
+        const linea = lineas.find((l) => l.id === p.id);
+        if (linea) linea.cantidad += 1; else lineas.push({ ...p, cantidad: 1 });
+        carrito.guardar(lineas);
+        pintarContador();
+      });
+      document.querySelector('#productos').append(ficha);
+    }
+  </script>
+</body>
+</html>

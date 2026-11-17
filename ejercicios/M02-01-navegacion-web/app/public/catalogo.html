@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="es">
+<head><meta charset="utf-8"><title>Catálogo</title><link rel="stylesheet" href="/estilos.css"></head>
+<body>
+  <nav aria-label="Principal">
+    <a href="/">Inicio</a>
+    <a href="/catalogo.html">Catálogo</a>
+    <a href="/contacto.html">Contacto</a>
+  </nav>
+  <h1>Catálogo</h1>
+  <p id="estado">Cargando productos…</p>
+  <ul id="productos"></ul>
+  <script>
+    // Pide los productos a la API; cuando llegan, los pinta y cambia el título de la pestaña
+    fetch('/api/productos').then((r) => r.json()).then((productos) => {
+      for (const nombre of productos) {
+        const li = document.createElement('li');
+        li.textContent = nombre;
+        document.querySelector('#productos').append(li);
+      }
+      document.querySelector('#estado').textContent = `${productos.length} productos`;
+      document.title = `Catálogo (${productos.length} productos)`;
+    });
+  </script>
+</body>
+</html>

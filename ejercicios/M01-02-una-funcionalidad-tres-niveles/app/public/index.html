@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Calculadora de entradas</title>
+</head>
+<body>
+  <h1>Calculadora de entradas</h1>
+  <p>12,50 € por entrada. A partir de 10 entradas, 20 % de descuento.</p>
+  <form id="calculadora">
+    <label for="unidades">Entradas</label>
+    <input id="unidades" type="number" min="1" value="1">
+    <button type="submit">Calcular</button>
+  </form>
+  <p>Total: <output id="total" aria-label="Total">—</output></p>
+  <script>
+    // La página no calcula: pide el precio a la API y lo muestra.
+    document.getElementById('calculadora').addEventListener('submit', async (evento) => {
+      evento.preventDefault();
+      const unidades = document.getElementById('unidades').value;
+      const respuesta = await fetch(`/api/precio?unidades=${unidades}`);
+      const datos = await respuesta.json();
+      document.getElementById('total').textContent =
+        respuesta.ok ? `${datos.total.toFixed(2)} €` : datos.error;
+    });
+  </script>
+</body>
+</html>

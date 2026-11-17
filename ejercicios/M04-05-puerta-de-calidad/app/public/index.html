@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Panel de pedidos</title>
+</head>
+<body>
+  <h1>Panel de pedidos</h1>
+  <form id="acceso">
+    <label for="usuario">Usuario</label>
+    <input id="usuario" required>
+    <label for="clave">Contraseña</label>
+    <input id="clave" type="password" required>
+    <button type="submit">Entrar</button>
+  </form>
+  <p id="mensaje" role="alert"></p>
+  <section id="panel" hidden>
+    <button id="mensual">Informe mensual</button>
+    <button id="anual">Informe anual</button>
+    <p id="informe" role="status"></p>
+  </section>
+  <script>
+    document.getElementById('acceso').addEventListener('submit', (evento) => {
+      evento.preventDefault();
+      const usuario = document.getElementById('usuario').value;
+      const clave = document.getElementById('clave').value;
+      if (usuario === 'ana' && clave === 'secreta') {
+        document.getElementById('mensaje').textContent = 'Hola, ana';
+        document.getElementById('panel').hidden = false;
+      } else {
+        document.getElementById('mensaje').textContent = 'Usuario o contraseña incorrectos';
+      }
+    });
+    for (const tipo of ['mensual', 'anual']) {
+      document.getElementById(tipo).addEventListener('click', async () => {
+        document.getElementById('informe').textContent = 'Generando…';
+        const datos = await (await fetch(`/api/informe/${tipo}`)).json();
+        document.getElementById('informe').textContent = `Informe ${datos.tipo}: ${datos.pedidos} pedidos`;
+      });
+    }
+  </script>
+</body>
+</html>

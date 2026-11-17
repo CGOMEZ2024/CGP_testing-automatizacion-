@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Lista de la compra</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 28rem; margin: 2rem auto; }
+    li { padding: .25rem 0; }
+  </style>
+</head>
+<body>
+  <h1>Lista de la compra</h1>
+  <form id="formulario">
+    <label for="producto">Producto</label>
+    <input id="producto" name="producto" autocomplete="off">
+    <button type="submit">Añadir</button>
+  </form>
+  <p id="contador">0 productos</p>
+  <ul id="lista" aria-label="Lista"></ul>
+  <script>
+    const lista = document.querySelector('#lista');
+    const contador = document.querySelector('#contador');
+    document.querySelector('#formulario').addEventListener('submit', (evento) => {
+      evento.preventDefault();
+      const campo = document.querySelector('#producto');
+      const texto = campo.value.trim();
+      if (!texto) return;
+      const li = document.createElement('li');
+      li.textContent = texto;
+      lista.append(li);
+      const total = lista.children.length;
+      contador.textContent = `${total} ${total === 1 ? 'producto' : 'productos'}`;
+      campo.value = '';
+    });
+  </script>
+</body>
+</html>

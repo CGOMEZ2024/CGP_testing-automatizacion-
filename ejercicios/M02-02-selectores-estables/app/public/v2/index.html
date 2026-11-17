@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Acceso</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background: #f4f4f8; }
+    .layout { display: grid; place-items: center; min-height: 100vh; }
+    .card { background: #fff; padding: 2rem; border-radius: 12px; box-shadow: 0 2px 8px #0002; width: 24rem; }
+    .stack { display: grid; gap: 1rem; }
+    .field { display: grid; gap: .25rem; }
+    .actions { display: flex; justify-content: space-between; }
+    .button--main { background: #3355ff; color: #fff; border: 0; padding: .5rem 1.5rem; border-radius: 6px; }
+    .button--ghost { background: none; border: 0; color: #3355ff; }
+  </style>
+</head>
+<body>
+  <main class="layout">
+    <section class="card card--login">
+      <header>
+        <h1 class="card__title">Acceso</h1>
+        <p class="card__subtitle">Usa tu cuenta corporativa</p>
+      </header>
+      <form class="stack">
+        <label class="field">
+          <span class="field__label">Correo electrónico</span>
+          <input name="correo" class="field__input" type="email">
+        </label>
+        <label class="field">
+          <span class="field__label">Contraseña</span>
+          <input name="clave" class="field__input" type="password">
+        </label>
+        <label class="check"><input name="recordar" type="checkbox"> Recordarme</label>
+        <div class="actions">
+          <button class="button button--ghost" type="button">¿Has olvidado la contraseña?</button>
+          <button class="button button--main" type="submit">Entrar</button>
+        </div>
+      </form>
+      <div class="toast" role="status" data-testid="saludo" hidden></div>
+    </section>
+  </main>
+  <script>
+    // Mismo comportamiento que la v1: al enviar, saluda con el correo
+    document.querySelector('form').addEventListener('submit', (evento) => {
+      evento.preventDefault();
+      const correo = document.querySelector('[name="correo"]').value;
+      const saludo = document.querySelector('[data-testid="saludo"]');
+      saludo.textContent = `Hola, ${correo}`;
+      saludo.hidden = false;
+    });
+  </script>
+</body>
+</html>

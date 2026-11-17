@@ -1,0 +1,46 @@
+# Solución del lab M04-04. Copia este fichero a .github/workflows/artefactos.yml (raíz del repo).
+name: Artefactos
+
+on:
+  push:
+    paths:
+      - 'ejercicios/M04-04-publicar-artefactos/**'
+      - '.github/workflows/artefactos.yml'
+  workflow_dispatch:
+
+jobs:
+  e2e:
+    name: E2E con reporte
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: ejercicios/M04-04-publicar-artefactos
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+        working-directory: .
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test
+
+      # El reporte se sube siempre que el job no se haya cancelado: pasen o fallen las pruebas
+      - name: Subir el reporte HTML
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: reporte-html
+          path: ejercicios/M04-04-publicar-artefactos/playwright-report/ # ruta desde la raíz del repo
+          retention-days: 7 # se borra a la semana (por defecto, 90 días)
+
+      # Las trazas solo existen si algo ha fallado: se suben solo en ese caso
+      - name: Subir las trazas de los fallos
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: trazas
+          path: ejercicios/M04-04-publicar-artefactos/test-results/
+          retention-days: 7

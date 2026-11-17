@@ -1,0 +1,25 @@
+{
+  "name": "testing-automatizacion-agile-201",
+  "private": true,
+  "type": "module",
+  "description": "Ejercicios del curso Test Automation for Agile Development",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "verificar": "node scripts/verificar-entorno.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.65.1",
+    "@stoplight/prism-cli": "5.16.0",
+    "@stryker-mutator/core": "10.1.1",
+    "@stryker-mutator/vitest-runner": "10.1.1",
+    "@vitest/coverage-v8": "5.1.0",
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1",
+    "allure": "3.33.0",
+    "allure-playwright": "3.15.0",
+    "cypress": "16.3.0",
+    "newman": "6.2.3",
+    "newman-reporter-htmlextra": "1.23.1",
+    "vitest": "5.1.0"
+  }
+}

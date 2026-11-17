@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="es">
+<head><meta charset="utf-8"><title>Notas</title></head>
+<body>
+  <h1>Mis notas</h1>
+  <form id="nueva">
+    <label>Nueva nota <input name="titulo" required></label>
+    <button>Añadir</button>
+  </form>
+  <label>Buscar <input id="buscar" type="search"></label>
+  <ul id="notas"></ul>
+  <script>
+    let todas = [];
+    const pintar = () => {
+      const texto = document.getElementById('buscar').value.toLowerCase();
+      document.getElementById('notas').innerHTML = todas
+        .filter((n) => n.titulo.toLowerCase().includes(texto))
+        .map((n) => `<li data-id="${n.id}">
+            <label><input type="checkbox" ${n.hecha ? 'checked' : ''}> ${n.titulo}</label>
+            <span class="estado">${n.hecha ? 'Hecha' : 'Pendiente'}</span>
+            <button aria-label="Borrar ${n.titulo}">Borrar</button>
+          </li>`).join('');
+    };
+    const recargar = async () => {
+      const r = await fetch('/api/notas');
+      if (r.status === 401) { location.href = '/login.html'; return; }
+      todas = await r.json();
+      pintar();
+    };
+    document.getElementById('nueva').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const titulo = e.target.titulo.value;
+      e.target.reset();
+      await fetch('/api/notas', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ titulo }) });
+      await recargar();
+    });
+    document.getElementById('buscar').addEventListener('input', pintar);
+    document.getElementById('notas').addEventListener('click', async (e) => {
+      const id = e.target.closest('li')?.dataset.id;
+      if (e.target.matches('input[type=checkbox]')) {
+        await fetch(`/api/notas/${id}`, { method: 'PATCH', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ hecha: e.target.checked }) });
+        await recargar();
+      }
+      if (e.target.matches('button')) {
+        await fetch(`/api/notas/${id}`, { method: 'DELETE' });
+        await recargar();
+      }
+    });
+    recargar();
+  </script>
+</body>
+</html>

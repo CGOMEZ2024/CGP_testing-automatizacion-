@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Acceso</title>
+  <style>
+    body { font-family: system-ui, sans-serif; }
+    .panel { max-width: 22rem; margin: 3rem auto; padding: 1rem 2rem; border: 1px solid #ccc; }
+    .form-row { margin: .75rem 0; }
+    .input-text { display: block; width: 100%; }
+    .btn-primary { background: #0b5; color: #fff; border: 0; padding: .5rem 1rem; }
+  </style>
+</head>
+<body>
+  <div class="panel">
+    <h1>Acceso</h1>
+    <form class="form">
+      <div class="form-row">
+        <label for="email">Correo electrónico</label>
+        <input id="email" class="input-text" type="email">
+      </div>
+      <div class="form-row">
+        <label for="pass">Contraseña</label>
+        <input id="pass" class="input-text" type="password">
+      </div>
+      <div class="form-row">
+        <input id="recordar" type="checkbox">
+        <label for="recordar">Recordarme</label>
+      </div>
+      <button class="btn btn-primary" type="submit">Entrar</button>
+    </form>
+    <p class="msg" data-testid="saludo" hidden></p>
+  </div>
+  <script>
+    // Al enviar, saluda con el correo (no hay servidor de usuarios: basta con rellenar los dos campos)
+    document.querySelector('form').addEventListener('submit', (evento) => {
+      evento.preventDefault();
+      const correo = document.querySelector('#email').value;
+      const saludo = document.querySelector('[data-testid="saludo"]');
+      saludo.textContent = `Hola, ${correo}`;
+      saludo.hidden = false;
+    });
+  </script>
+</body>
+</html>

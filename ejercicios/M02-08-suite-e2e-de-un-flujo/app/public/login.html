@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="es">
+<head><meta charset="utf-8"><title>Entrar · Tienda</title><link rel="stylesheet" href="/estilos.css"></head>
+<body>
+  <h1>Entrar en la tienda</h1>
+  <form id="login">
+    <label for="usuario">Usuario</label>
+    <input id="usuario" autocomplete="username">
+    <label for="clave">Contraseña</label>
+    <input id="clave" type="password" autocomplete="current-password">
+    <button type="submit">Entrar</button>
+  </form>
+  <p id="error" role="alert"></p>
+  <script type="module">
+    document.querySelector('#login').addEventListener('submit', async (evento) => {
+      evento.preventDefault();
+      const respuesta = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ usuario: document.querySelector('#usuario').value, clave: document.querySelector('#clave').value }),
+      });
+      if (respuesta.ok) location.href = '/catalogo.html';
+      else document.querySelector('#error').textContent = (await respuesta.json()).error;
+    });
+  </script>
+</body>
+</html>

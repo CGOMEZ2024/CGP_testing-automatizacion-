@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="es">
+<head><meta charset="utf-8"><title>Resumen</title></head>
+<body>
+  <h1>Resumen del pedido</h1>
+  <button id="calcular">Calcular total</button>
+  <p>Total: <output id="total" data-testid="total">0,00 €</output></p>
+  <script>
+    const TOTAL = 1234.5;
+    const formato = (n) => n.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+    // Si el sistema pide menos movimiento, el total aparece sin animación
+    const sinAnimacion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    document.getElementById('calcular').addEventListener('click', () => {
+      const salida = document.getElementById('total');
+      if (sinAnimacion) { salida.textContent = formato(TOTAL); return; }
+      // Animación de «contador» de 400 ms: el número sube de 0 al total
+      const inicio = performance.now();
+      const paso = (ahora) => {
+        const t = Math.min((ahora - inicio) / 400, 1);
+        salida.textContent = formato(TOTAL * t);
+        if (t < 1) requestAnimationFrame(paso);
+      };
+      requestAnimationFrame(paso);
+    });
+  </script>
+</body>
+</html>

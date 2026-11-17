@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="es">
+<head><meta charset="utf-8"><title>Entrar</title></head>
+<body>
+  <h1>Entrar</h1>
+  <form id="login">
+    <label>Usuario <input name="usuario" autocomplete="username"></label>
+    <label>Clave <input name="clave" type="password" autocomplete="current-password"></label>
+    <button>Entrar</button>
+  </form>
+  <p id="error" role="alert"></p>
+  <script>
+    document.getElementById('login').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const datos = Object.fromEntries(new FormData(e.target));
+      const r = await fetch('/api/login', {
+        method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(datos),
+      });
+      if (r.ok) location.href = '/notas.html';
+      else document.getElementById('error').textContent = 'Usuario o clave incorrectos';
+    });
+  </script>
+</body>
+</html>

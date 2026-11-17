@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="es">
+<head><meta charset="utf-8"><title>Pedidos</title></head>
+<body>
+  <h1>Pedidos</h1>
+  <button id="cargar">Cargar pedidos</button>
+  <p id="estado"></p>
+  <ul id="lista"></ul>
+  <script>
+    document.getElementById('cargar').addEventListener('click', async () => {
+      document.getElementById('estado').textContent = 'Cargando…';
+      const pedidos = await (await fetch('/api/pedidos')).json();
+      document.getElementById('lista').innerHTML = pedidos
+        .map(p => `<li>#${p.id} · ${p.cliente} · ${p.total} €</li>`).join('');
+      document.getElementById('estado').textContent = `${pedidos.length} pedidos`;
+    });
+  </script>
+</body>
+</html>

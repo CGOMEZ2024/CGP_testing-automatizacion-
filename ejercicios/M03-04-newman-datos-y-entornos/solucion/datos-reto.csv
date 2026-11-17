@@ -1,0 +1,5 @@
+nombre,email,estadoEsperado,errorEsperado
+Ana,ana@example.com,201,
+Marta,no-es-un-email,400,El email no es válido
+,sin-nombre@example.com,400,El nombre es obligatorio
+Pedro,,400,El email no es válido

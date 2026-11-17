@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="es">
+<head><meta charset="utf-8"><title>Favoritos</title></head>
+<body>
+  <h1>Favoritos</h1>
+  <form id="nuevo">
+    <label>Destino <input name="nombre" required></label>
+    <button>Añadir</button>
+  </form>
+  <button id="vaciar">Vaciar lista</button>
+  <ul id="favoritos"></ul>
+  <script>
+    // La lista se elige con ?lista=… (por defecto, «general»)
+    const nombreLista = new URLSearchParams(location.search).get('lista') ?? 'general';
+    const api = `/api/listas/${nombreLista}/favoritos`;
+    const pintar = (favoritos) => {
+      document.getElementById('favoritos').innerHTML = favoritos.map(f => `<li>${f}</li>`).join('');
+    };
+    const recargar = async () => pintar(await (await fetch(api)).json());
+
+    document.getElementById('nuevo').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const nombre = e.target.nombre.value;
+      e.target.reset();
+      await fetch(api, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ nombre }) });
+      await recargar();
+    });
+    document.getElementById('vaciar').addEventListener('click', async () => {
+      await fetch(api, { method: 'DELETE' });
+      await recargar();
+    });
+    recargar();
+  </script>
+</body>
+</html>

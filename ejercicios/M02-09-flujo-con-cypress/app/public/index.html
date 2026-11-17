@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Reserva de salas</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 24rem; margin: 2rem auto; }
+    form { display: grid; gap: .4rem; }
+    .error { color: #b00020; }
+  </style>
+</head>
+<body>
+  <h1>Reserva de salas</h1>
+  <form id="reserva">
+    <label for="sala">Sala</label>
+    <select id="sala"></select>
+    <label for="fecha">Fecha</label>
+    <input id="fecha" type="date" required>
+    <label for="hora">Hora</label>
+    <select id="hora"><option>09:00</option><option>10:00</option><option>11:00</option><option>12:00</option></select>
+    <label for="nombre">Reservado por</label>
+    <input id="nombre" required>
+    <button type="submit">Reservar</button>
+  </form>
+  <p id="resultado" role="status"></p>
+  <script>
+    const $ = (sel) => document.querySelector(sel);
+
+    // Carga las salas en el desplegable
+    fetch('/api/salas').then((r) => r.json()).then((salas) => {
+      for (const sala of salas) $('#sala').append(new Option(sala, sala));
+    });
+
+    // Envía la reserva; mientras el servidor responde, el botón queda desactivado
+    $('#reserva').addEventListener('submit', async (evento) => {
+      evento.preventDefault();
+      const boton = $('button[type="submit"]');
+      boton.disabled = true;
+      $('#resultado').className = '';
+      $('#resultado').textContent = 'Enviando…';
+      const datos = { sala: $('#sala').value, fecha: $('#fecha').value, hora: $('#hora').value, nombre: $('#nombre').value };
+      const respuesta = await fetch('/api/reservas', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(datos),
+      });
+      const cuerpo = await respuesta.json();
+      if (respuesta.ok) {
+        $('#resultado').textContent = `Reserva ${cuerpo.codigo} confirmada: ${cuerpo.sala}, ${cuerpo.fecha} ${cuerpo.hora}`;
+      } else {
+        $('#resultado').className = 'error';
+        $('#resultado').textContent = cuerpo.error;
+      }
+      boton.disabled = false;
+    });
+  </script>
+</body>
+</html>

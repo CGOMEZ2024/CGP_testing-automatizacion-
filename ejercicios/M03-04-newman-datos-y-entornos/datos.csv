@@ -1,0 +1,4 @@
+nombre,email,estadoEsperado
+Ana,ana@example.com,201
+Luis,luis@example.com,201
+Marta,no-es-un-email,400

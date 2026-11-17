@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Lista de tareas</title>
+</head>
+<body>
+  <h1>Lista de tareas</h1>
+  <form id="nueva">
+    <label for="tarea">Nueva tarea</label>
+    <input id="tarea" required>
+    <button type="submit">Añadir</button>
+  </form>
+  <ul id="tareas" aria-label="Tareas"></ul>
+  <p id="contador">0 tareas</p>
+  <script>
+    const lista = document.getElementById('tareas');
+    document.getElementById('nueva').addEventListener('submit', (evento) => {
+      evento.preventDefault();
+      const campo = document.getElementById('tarea');
+      const li = document.createElement('li');
+      li.textContent = campo.value.trim();
+      lista.append(li);
+      campo.value = '';
+      const n = lista.children.length;
+      document.getElementById('contador').textContent = `${n} ${n === 1 ? 'tarea' : 'tareas'}`;
+    });
+  </script>
+</body>
+</html>

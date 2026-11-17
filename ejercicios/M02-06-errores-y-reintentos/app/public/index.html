@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Mi cuenta</title>
+  <style>body { font-family: system-ui, sans-serif; max-width: 26rem; margin: 2rem auto; }</style>
+</head>
+<body>
+  <h1>Mi cuenta</h1>
+  <button id="consultar">Consultar saldo</button>
+  <p id="saldo" role="status"></p>
+  <h2>Movimientos</h2>
+  <ul id="movimientos" aria-label="Movimientos"></ul>
+  <script>
+    const euros = (n) => n.toFixed(2).replace('.', ',') + ' €';
+
+    // Consulta el saldo; si el servicio falla, lo dice (el usuario puede volver a pulsar)
+    document.querySelector('#consultar').addEventListener('click', async () => {
+      const salida = document.querySelector('#saldo');
+      salida.textContent = 'Consultando…';
+      const respuesta = await fetch('/api/saldo');
+      salida.textContent = respuesta.ok
+        ? `Saldo: ${euros((await respuesta.json()).saldo)}`
+        : 'Servicio no disponible, inténtalo de nuevo';
+    });
+
+    // Pinta los movimientos al cargar la página
+    fetch('/api/movimientos').then((r) => r.json()).then((movimientos) => {
+      for (const m of movimientos) {
+        const li = document.createElement('li');
+        li.textContent = `${m.concepto}: ${euros(m.importe)}`;
+        document.querySelector('#movimientos').append(li);
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "folders": [
+    {
+      "name": "testing-automatizacion-agile-201",
+      "path": "/home/david/Cursos/testing-automatizacion-agile-201"
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/.git": true
+    }
+  }
+}

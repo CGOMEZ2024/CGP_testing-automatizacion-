@@ -1,0 +1,7 @@
+{
+  "name": "preproduccion",
+  "values": [
+    { "key": "baseUrl", "value": "http://localhost:3314", "enabled": true },
+    { "key": "nombreEntorno", "value": "preproduccion", "enabled": true }
+  ]
+}

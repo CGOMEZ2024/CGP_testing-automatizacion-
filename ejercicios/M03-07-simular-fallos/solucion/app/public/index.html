@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Pedidos</title>
+  <style>
+    body { font-family: sans-serif; margin: 2rem; }
+    [role="alert"] { color: #b00020; }
+  </style>
+</head>
+<body>
+  <h1>Pedidos</h1>
+  <p role="status" id="estado"></p>
+  <p role="alert" id="error" hidden></p>
+  <ul id="lista"></ul>
+
+  <script type="module">
+    const estado = document.querySelector('#estado');
+    const error = document.querySelector('#error');
+    const lista = document.querySelector('#lista');
+
+    function mostrarError(mensaje) {
+      estado.textContent = '';
+      error.textContent = mensaje;
+      error.hidden = false;
+    }
+
+    function pintar(pedidos) {
+      estado.textContent = pedidos.length === 0 ? 'No hay pedidos' : '';
+      for (const pedido of pedidos) {
+        const li = document.createElement('li');
+        li.textContent = `Pedido ${pedido.id} · ${pedido.cliente} · ${pedido.total.toFixed(2)} €`;
+        lista.append(li);
+      }
+    }
+
+    estado.textContent = 'Cargando pedidos…';
+    let respuesta;
+    try {
+      respuesta = await fetch('/api/pedidos');
+    } catch {
+      // fetch solo falla si no hay respuesta: red caída, servidor apagado…
+      mostrarError('Sin conexión con el servidor');
+    }
+    if (respuesta && !respuesta.ok) {
+      mostrarError(`No se han podido cargar los pedidos (error ${respuesta.status})`);
+    } else if (respuesta) {
+      try {
+        pintar(await respuesta.json());
+      } catch {
+        // Hay respuesta, pero el cuerpo no es la lista que esperamos
+        mostrarError('Respuesta no válida del servidor');
+      }
+    }
+  </script>
+</body>
+</html>

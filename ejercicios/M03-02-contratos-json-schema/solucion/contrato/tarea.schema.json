@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Tarea",
+  "type": "object",
+  "properties": {
+    "id": { "type": "integer" },
+    "titulo": { "type": "string", "minLength": 1 },
+    "hecha": { "type": "boolean" },
+    "creada": { "type": "string", "format": "date-time" }
+  },
+  "required": ["id", "titulo", "hecha", "creada"],
+  "additionalProperties": false
+}

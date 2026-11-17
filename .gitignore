@@ -1,0 +1,34 @@
+# Arnés del agente y diseño (no subir al remoto público)
+.agent/
+.cursor/
+CLAUDE.md
+
+# Legacy: por si existían en versiones anteriores
+AGENTS.md
+briefing.md
+temario.md
+contexto.md
+propuesta.md
+diseno-pedagogico/
+curso.meta.json
+
+# Entorno local
+infra/.env
+
+# Dependencias y resultados de las pruebas
+node_modules/
+test-results/
+playwright-report/
+blob-report/
+allure-results/
+allure-report/
+coverage/
+reports/
+reports-*/
+.stryker-tmp/
+cypress/videos/
+cypress/screenshots/
+**/cypress/videos/
+**/cypress/screenshots/
+*.log
+.auth/

@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Entregas de hoy</title>
+  <style>body { font-family: system-ui, sans-serif; max-width: 30rem; margin: 2rem auto; }</style>
+</head>
+<body>
+  <h1>Entregas de hoy</h1>
+  <button id="actualizar" disabled>Actualizar</button>
+  <p id="estado">Cargando entregas…</p>
+  <ul id="entregas" aria-label="Entregas"></ul>
+  <script>
+    const boton = document.querySelector('#actualizar');
+    const lista = document.querySelector('#entregas');
+    const estado = document.querySelector('#estado');
+
+    // Pide las entregas; mientras tanto, el botón está desactivado y la lista vacía
+    async function cargar() {
+      boton.disabled = true;
+      lista.replaceChildren();
+      estado.textContent = 'Cargando entregas…';
+      const entregas = await (await fetch('/api/entregas')).json();
+      for (const e of entregas) {
+        const li = document.createElement('li');
+        li.textContent = `${e.codigo} · ${e.destino} · ${e.estado}`;
+        lista.append(li);
+      }
+      estado.textContent = `${entregas.length} entregas`;
+      boton.disabled = false;
+    }
+    boton.addEventListener('click', cargar);
+    cargar();
+  </script>
+</body>
+</html>

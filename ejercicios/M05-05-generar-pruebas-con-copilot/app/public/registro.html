@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="es">
+<head><meta charset="utf-8"><title>Crear cuenta</title></head>
+<body>
+  <h1>Crear cuenta</h1>
+  <form id="registro" novalidate>
+    <label>Usuario <input name="usuario"></label>
+    <label>Contraseña <input name="clave" type="password"></label>
+    <button>Crear cuenta</button>
+  </form>
+  <div id="resultado" role="status"></div>
+  <ul id="errores" aria-label="Errores"></ul>
+  <script type="module">
+    import { validarContrasena } from '/contrasena.js';
+    const MENSAJES = {
+      longitud: 'Entre 12 y 64 caracteres',
+      mayuscula: 'Al menos una mayúscula',
+      minuscula: 'Al menos una minúscula',
+      digito: 'Al menos un número',
+      simbolo: 'Al menos un símbolo',
+      espacios: 'Sin espacios',
+      usuario: 'No puede contener tu usuario',
+    };
+    document.getElementById('registro').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const { usuario, clave } = Object.fromEntries(new FormData(e.target));
+      const { valida, errores } = validarContrasena(clave, { usuario });
+      document.getElementById('errores').innerHTML = errores.map((c) => `<li>${MENSAJES[c]}</li>`).join('');
+      document.getElementById('resultado').textContent = valida ? `Cuenta creada para ${usuario}` : 'Revisa la contraseña';
+    });
+  </script>
+</body>
+</html>

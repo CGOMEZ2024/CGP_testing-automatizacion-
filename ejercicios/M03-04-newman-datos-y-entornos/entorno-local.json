@@ -1,0 +1,7 @@
+{
+  "name": "local",
+  "values": [
+    { "key": "baseUrl", "value": "http://localhost:3304", "enabled": true },
+    { "key": "nombreEntorno", "value": "local", "enabled": true }
+  ]
+}

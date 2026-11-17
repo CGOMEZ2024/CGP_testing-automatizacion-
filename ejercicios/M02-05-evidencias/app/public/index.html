@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Carrito</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 26rem; margin: 2rem auto; }
+    td { padding: .2rem 1rem .2rem 0; }
+    #total { font-size: 1.4rem; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>Carrito</h1>
+  <table>
+    <tr><td>Auriculares</td><td>60,00 €</td></tr>
+    <tr><td>Funda</td><td>40,00 €</td></tr>
+  </table>
+  <form id="form-cupon">
+    <label for="cupon">Cupón</label>
+    <input id="cupon">
+    <button type="submit">Aplicar</button>
+  </form>
+  <p>Total: <span id="total" data-testid="total">100,00 €</span></p>
+  <script>
+    const SUBTOTAL = 100;
+    const euros = (n) => n.toFixed(2).replace('.', ',') + ' €';
+
+    document.querySelector('#form-cupon').addEventListener('submit', async (evento) => {
+      evento.preventDefault();
+      const codigo = document.querySelector('#cupon').value.trim();
+      const respuesta = await fetch(`/api/cupones/${encodeURIComponent(codigo)}`);
+      if (!respuesta.ok) {
+        console.warn(`Cupón rechazado: ${codigo} (${respuesta.status})`);
+        return;                                // el total no cambia y no se avisa al usuario
+      }
+      const { descuento } = await respuesta.json();
+      document.querySelector('#total').textContent = euros(SUBTOTAL * (1 - descuento / 100));
+    });
+  </script>
+</body>
+</html>

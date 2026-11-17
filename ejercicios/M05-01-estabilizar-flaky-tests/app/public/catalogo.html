@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="es">
+<head><meta charset="utf-8"><title>Catálogo</title></head>
+<body>
+  <h1>Catálogo</h1>
+  <p id="estado">Cargando…</p>
+  <ul id="productos"></ul>
+  <script>
+    fetch('/api/productos').then(r => r.json()).then(productos => {
+      document.getElementById('productos').innerHTML = productos.map(p => `<li>${p}</li>`).join('');
+      document.getElementById('estado').textContent = `${productos.length} productos`;
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Conversor de temperaturas</title>
+</head>
+<body>
+  <h1>Conversor de temperaturas</h1>
+  <form id="conversor">
+    <label for="celsius">Grados Celsius</label>
+    <input id="celsius" type="number" step="any" required>
+    <button type="submit">Convertir</button>
+  </form>
+  <p id="resultado" role="status"></p>
+  <script>
+    document.getElementById('conversor').addEventListener('submit', (evento) => {
+      evento.preventDefault();
+      const celsius = Number(document.getElementById('celsius').value);
+      const fahrenheit = Math.round((celsius * 9 / 5 + 32) * 10) / 10;
+      document.getElementById('resultado').textContent = `${celsius} °C = ${fahrenheit} °F`;
+    });
+  </script>
+</body>
+</html>

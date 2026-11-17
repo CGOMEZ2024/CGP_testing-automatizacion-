@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="es">
+<head><meta charset="utf-8"><title>Carrito · Tienda</title><link rel="stylesheet" href="/estilos.css"></head>
+<body>
+  <header>
+    <span id="usuario"></span> ·
+    <a href="/catalogo.html">Catálogo</a> ·
+    <a id="enlace-carrito" href="/carrito.html">Carrito (0)</a>
+  </header>
+  <h1>Tu carrito</h1>
+  <table aria-label="Líneas del carrito"><tbody id="lineas"></tbody></table>
+  <p>Total: <strong id="total" data-testid="total">0,00 €</strong></p>
+  <button id="confirmar">Confirmar pedido</button>
+  <p id="confirmacion" role="status"></p>
+  <script type="module">
+    import { carrito, euros, exigirSesion, pintarContador } from '/tienda.js';
+    await exigirSesion();
+    const lineas = carrito.leer();
+    for (const l of lineas) {
+      const fila = document.createElement('tr');
+      fila.innerHTML = `<td></td><td>${l.cantidad} × ${euros(l.precio)}</td><td>${euros(l.cantidad * l.precio)}</td>`;
+      fila.querySelector('td').textContent = l.nombre;
+      document.querySelector('#lineas').append(fila);
+    }
+    document.querySelector('#total').textContent = euros(lineas.reduce((t, l) => t + l.cantidad * l.precio, 0));
+    const boton = document.querySelector('#confirmar');
+    boton.disabled = lineas.length === 0;           // con el carrito vacío no se puede confirmar
+    boton.addEventListener('click', async () => {
+      const respuesta = await fetch('/api/pedidos', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ lineas }),
+      });
+      const datos = await respuesta.json();
+      if (!respuesta.ok) { document.querySelector('#confirmacion').textContent = datos.error; return; }
+      carrito.vaciar();
+      pintarContador();
+      boton.disabled = true;
+      document.querySelector('#confirmacion').textContent = `Pedido ${datos.numero} confirmado`;
+    });
+  </script>
+</body>
+</html>

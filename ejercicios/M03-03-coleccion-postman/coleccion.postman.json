@@ -1,0 +1,146 @@
+{
+  "info": {
+    "name": "M03-03 API de libros",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Listar libros",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('el estado es 200', () => {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "pm.test('responde JSON', () => {",
+              "  pm.response.to.be.json;",
+              "});",
+              "pm.test('devuelve una lista con libros', () => {",
+              "  const libros = pm.response.json();",
+              "  pm.expect(libros).to.be.an('array').that.is.not.empty;",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/libros",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "libros"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Leer el libro 1",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// Escribe aquí las pruebas de esta petición"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/libros/1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "libros",
+            "1"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Leer un libro que no existe",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// Escribe aquí las pruebas de esta petición"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/libros/99",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "libros",
+            "99"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Crear un libro",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// Escribe aquí las pruebas de esta petición"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/libros",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "libros"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"titulo\": \"Accelerate\", \"autor\": \"Nicole Forsgren\", \"anio\": 2018}"
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3303"
+    }
+  ]
+}

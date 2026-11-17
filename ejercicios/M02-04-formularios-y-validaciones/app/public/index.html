@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Alta de cuenta</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 26rem; margin: 2rem auto; }
+    .campo { display: grid; gap: .2rem; margin-bottom: .8rem; }
+    .error { color: #b00020; font-size: .9rem; min-height: 1em; }
+  </style>
+</head>
+<body>
+  <h1>Alta de cuenta</h1>
+  <form id="alta" novalidate>
+    <div class="campo">
+      <label for="nombre">Nombre</label>
+      <input id="nombre" aria-describedby="error-nombre">
+      <span class="error" id="error-nombre"></span>
+    </div>
+    <div class="campo">
+      <label for="correo">Correo electrónico</label>
+      <input id="correo" type="email" aria-describedby="error-correo">
+      <span class="error" id="error-correo"></span>
+    </div>
+    <div class="campo">
+      <label for="clave">Contraseña</label>
+      <input id="clave" type="password" aria-describedby="error-clave">
+      <span class="error" id="error-clave"></span>
+    </div>
+    <div class="campo">
+      <label for="repite">Repite la contraseña</label>
+      <input id="repite" type="password" aria-describedby="error-repite">
+      <span class="error" id="error-repite"></span>
+    </div>
+    <div class="campo">
+      <label for="plan">Plan</label>
+      <select id="plan">
+        <option value="basico">Básico</option>
+        <option value="profesional">Profesional</option>
+        <option value="empresa">Empresa</option>
+      </select>
+    </div>
+    <div class="campo">
+      <label><input id="condiciones" type="checkbox"> Acepto las condiciones</label>
+      <span class="error" id="error-condiciones"></span>
+    </div>
+    <button type="submit">Crear cuenta</button>
+  </form>
+  <p id="resultado" role="status"></p>
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    // Reglas de validación: cada una devuelve el mensaje de error o '' si el campo es válido
+    const reglas = {
+      nombre: () => ($('nombre').value.trim() ? '' : 'El nombre es obligatorio'),
+      correo: () => (/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test($('correo').value) ? '' : 'Escribe un correo válido'),
+      clave: () => (/^(?=.*\d).{8,}$/.test($('clave').value) ? '' : 'La contraseña necesita 8 caracteres y un número'),
+      repite: () => ($('repite').value === $('clave').value ? '' : 'Las contraseñas no coinciden'),
+      condiciones: () => ($('condiciones').checked ? '' : 'Debes aceptar las condiciones'),
+    };
+
+    $('alta').addEventListener('submit', async (evento) => {
+      evento.preventDefault();
+      $('resultado').textContent = '';
+      let valido = true;
+      for (const [campo, regla] of Object.entries(reglas)) {
+        const mensaje = regla();
+        $(`error-${campo}`).textContent = mensaje;
+        if (campo !== 'condiciones') $(campo).setAttribute('aria-invalid', mensaje ? 'true' : 'false');
+        if (mensaje) valido = false;
+      }
+      if (!valido) return;
+
+      // Todo correcto en el navegador: se envía al servidor, que puede rechazarlo (correo repetido)
+      const plan = $('plan');
+      const respuesta = await fetch('/api/altas', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ nombre: $('nombre').value, correo: $('correo').value, plan: plan.value }),
+      });
+      const datos = await respuesta.json();
+      $('resultado').textContent = respuesta.ok
+        ? `Alta completada: ${datos.correo} (plan ${plan.selectedOptions[0].text})`
+        : datos.error;
+    });
+  </script>
+</body>
+</html>

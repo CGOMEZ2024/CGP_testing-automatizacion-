@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Tareas</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 26rem; margin: 2rem auto; }
+    li { display: flex; gap: .5rem; align-items: center; }
+    li.hecha span { text-decoration: line-through; color: #888; }
+  </style>
+</head>
+<body>
+  <h1>Tareas</h1>
+  <form id="nueva">
+    <input id="texto" placeholder="Nueva tarea" aria-label="Nueva tarea">
+    <button type="submit">Añadir</button>
+  </form>
+  <ul id="lista" aria-label="Tareas"></ul>
+  <p id="pendientes">0 pendientes</p>
+  <script>
+    const lista = document.querySelector('#lista');
+
+    // Recalcula el contador de tareas sin completar
+    function contar() {
+      const n = lista.querySelectorAll('li:not(.hecha)').length;
+      document.querySelector('#pendientes').textContent = `${n} ${n === 1 ? 'pendiente' : 'pendientes'}`;
+    }
+
+    // Añade una tarea con su casilla para completarla y su botón para borrarla
+    document.querySelector('#nueva').addEventListener('submit', (evento) => {
+      evento.preventDefault();
+      const campo = document.querySelector('#texto');
+      const texto = campo.value.trim();
+      if (!texto) return;
+      const li = document.createElement('li');
+      li.innerHTML = `<input type="checkbox" aria-label="Completar ${texto}"><span></span><button>Borrar</button>`;
+      li.querySelector('span').textContent = texto;
+      li.querySelector('input').addEventListener('change', (e) => { li.classList.toggle('hecha', e.target.checked); contar(); });
+      li.querySelector('button').addEventListener('click', () => { li.remove(); contar(); });
+      lista.append(li);
+      campo.value = '';
+      contar();
+    });
+  </script>
+</body>
+</html>

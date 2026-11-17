@@ -1,0 +1,37 @@
+# Lab M04-06: la aplicación y las pruebas, cada una en su contenedor.
+name: m04-06
+
+services:
+  # La aplicación bajo prueba, con la imagen oficial de Node
+  tablon:
+    image: node:22-alpine
+    working_dir: /app
+    volumes:
+      - ./app:/app:ro
+    command: node server.mjs
+    init: true # un proceso init reenvía la señal de parada a node: se detiene al momento
+    environment:
+      PORT: 3406
+    ports:
+      - '3406:3406'
+    healthcheck: # «sana» cuando /salud responde
+      test: ['CMD', 'wget', '-qO-', 'http://localhost:3406/salud']
+      interval: 2s
+      timeout: 2s
+      retries: 10
+
+  # Las pruebas, con la imagen oficial de Playwright (Node + navegadores)
+  pruebas:
+    image: mcr.microsoft.com/playwright:v1.65.1-noble # misma versión que @playwright/test
+    working_dir: /repo/ejercicios/M04-06-pruebas-en-contenedores
+    volumes:
+      - ../..:/repo # el repositorio entero: pruebas, configuración y node_modules
+    environment:
+      BASE_URL: http://localhost:3406
+      PW_OUTPUT_DIR: /tmp/test-results
+      CI: 'true'
+    ipc: host # Chromium necesita memoria compartida
+    command: npx playwright test
+    depends_on:
+      tablon:
+        condition: service_healthy # no empieza hasta que la app está sana

@@ -1,0 +1,9 @@
+{
+  "name": "m04-07-api-libros",
+  "private": true,
+  "type": "module",
+  "description": "API de libros del lab M04-07 (solo la usa su contenedor o el job de CI)",
+  "dependencies": {
+    "pg": "8.23.1"
+  }
+}
