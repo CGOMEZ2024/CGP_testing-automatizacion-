@@ -129,10 +129,14 @@ porque arranca un servidor y hace una petición HTTP real.
 ### 3 — Probar la creación por HTTP
 
 Escribes la prueba de integración de `POST /api/tareas`: la petición real, con su cuerpo JSON, y la
-comprobación del estado y del cuerpo de la respuesta. Pégala debajo de
-`// Tus pruebas, debajo de esta línea`:
+comprobación del estado y del cuerpo de la respuesta.
+
+Abre **`pruebas/tareas.integracion.test.js`** y pega la prueba debajo de
+`// Tus pruebas, debajo de esta línea`, dentro del `describe`. Tiene que ir en este fichero:
+aquí están el servidor que arranca `beforeAll` y la variable `base` con su dirección.
 
 ```js
+  // Fichero: pruebas/tareas.integracion.test.js
   it('POST /api/tareas crea la tarea y responde 201', async () => {
     // Preparar: el cuerpo de la petición
     const nueva = { titulo: 'Comprar pan' };
@@ -248,9 +252,17 @@ npx vitest run
 
 Responder `201` no garantiza que la tarea se haya guardado. Esta prueba crea su propia tarea y
 comprueba que aparece en la lista: recorre servidor, rutas y almacén de ida y de vuelta. También
-añades la validación por HTTP: sin título, `400` con el motivo. Pega las dos debajo de la anterior:
+añades la validación por HTTP: sin título, `400` con el motivo.
+
+> ⚠️ Vuelve a **`pruebas/tareas.integracion.test.js`**. No las pegues en `crear-tarea.test.js`, que
+> es el que acabas de editar en el paso 5: ahí no existe `base` y fallarían con
+> `ReferenceError: base is not defined`.
+
+Pega las dos debajo de la prueba `POST /api/tareas crea la tarea y responde 201` del paso 3, antes
+del `});` que cierra el `describe`:
 
 ```js
+  // Fichero: pruebas/tareas.integracion.test.js
   it('la tarea creada aparece en GET /api/tareas', async () => {
     // Preparar: crea su propia tarea por la API
     const creada = await fetch(`${base}/api/tareas`, {
@@ -419,6 +431,7 @@ interfaz que consume, con las piezas reales detrás.
 | Síntoma | Causa probable | Cómo arreglarlo |
 |---------|----------------|-----------------|
 | `expected 500 to be 201` | Una pieza falla dentro del servidor | Lee el bloque `stderr` de la salida: trae el error y la línea |
+| `ReferenceError: base is not defined` en `crear-tarea.test.js` | Has pegado las pruebas de integración en el fichero de la unitaria | Muévelas a `pruebas/tareas.integracion.test.js`, dentro del `describe` |
 | `Hook timed out in 10000ms` y `EADDRINUSE` | La prueba usa un puerto fijo que está ocupado | Usa `servidor.listen(0, resolve)` |
 | [Vitest](../glosario/01-fundamentos.md#vitest) no termina al acabar las pruebas | El servidor sigue abierto | Ciérralo en `afterAll` con `servidor.close` |
 | Una prueba pasa sola y falla con las demás porque el `id` no es el esperado | La prueba supone un id concreto, y las anteriores ya han creado tareas en el mismo almacén | Usa `expect.any(Number)` para el id y compara con lo que devolvió tu propio POST |
